@@ -79,3 +79,16 @@ if encrypted_file is not None:
         st.image(decrypted_data, caption="Decrypted Image")
     except:
         st.error("Invalid password or corrupted image file.")
+
+st.markdown(
+    """
+**Disclaimer:**
+
+- This web app was created by a student for fun
+- This web app does not store your images or passwords.
+- It is your responsibility to keep your password secure.
+- The encryption method used is not unbreakable.
+- Use this app at your own risk.
+# """,
+    unsafe_allow_html=True,
+)
