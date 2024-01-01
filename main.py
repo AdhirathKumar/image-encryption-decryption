@@ -1,5 +1,6 @@
 import streamlit as st
 import pickle
+import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -19,7 +20,9 @@ if uploaded_file is not None:
 
     salt = os.urandom(16)  # Generate a random salt
     kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=390000)
-    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))[:32]  # Extract 32 bytes
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))[
+        :32
+    ]  # Extract 32 bytes
 
     backend = default_backend()
     iv = os.urandom(16)  # Generate a random initialization vector (IV)
@@ -36,14 +39,16 @@ if uploaded_file is not None:
         label="Download Encrypted Image",
         data=encrypted_data,
         file_name="encrypted_image.bin",
-        mime="application/octet-stream"
+        mime="application/octet-stream",
     )
 
 # ------------------------- Encrypted to Original -------------------------
 
 st.header("Encrypted to Original")
 
-password_verify = st.text_input("Enter the password used for encryption:", type="password")
+password_verify = st.text_input(
+    "Enter the password used for encryption:", type="password"
+)
 
 encrypted_file = st.file_uploader("Upload an encrypted image (.bin format)")
 
@@ -56,7 +61,7 @@ if encrypted_file is not None:
         length=32,
         salt=salt,
         iterations=390000,
-        backend=backend
+        backend=backend,
     )
     key_from_file = base64.urlsafe_b64encode(kdf.derive(password_verify.encode()))[:32]
 
@@ -64,7 +69,9 @@ if encrypted_file is not None:
     decryptor = cipher.decryptor()
 
     try:
-        decrypted_data = decryptor.update(encrypted_data_from_file) + decryptor.finalize()
+        decrypted_data = (
+            decryptor.update(encrypted_data_from_file) + decryptor.finalize()
+        )
 
         st.success("Image decrypted successfully!")
         st.image(decrypted_data, caption="Decrypted Image")
